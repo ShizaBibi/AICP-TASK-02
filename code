@@ -1,0 +1,114 @@
+# Constants
+MAX_PASSENGERS_PER_COACH = 80
+TICKET_PRICE = 25
+GROUP_DISCOUNT_SIZE = 10
+
+# Data structures to store passenger counts and money totals
+class TrainJourney:
+    def __init__(self):
+        self.passengers_up = 0
+        self.passengers_down = 0
+        self.money_up = 0
+        self.money_down = 0
+
+# Function to display the available tickets or "Closed" if full
+def displayTickets(available_tickets):
+    if available_tickets > 0:
+        print(f"{available_tickets} tickets available")
+    else:
+        print("Closed")
+
+# Initialize data structures for the four train journeys
+train_journeys = [TrainJourney() for _ in range(4)]
+
+# Variables for total passengers and money
+total_passengers = 0
+total_money = 0
+
+# Task 1 - Start of the day
+print("Electric Mountain Railway - Start of the Day\n")
+print("Train Schedule (Up and Down)")
+print("----------------------------------")
+
+for i in range(4):
+    print(f"Journey {i+1} (09:00 - 10:00): ", end="")
+    displayTickets(MAX_PASSENGERS_PER_COACH * 6 - train_journeys[i].passengers_up)
+    print(" | ", end="")
+    displayTickets(MAX_PASSENGERS_PER_COACH * 6 - train_journeys[i].passengers_down)
+    print()
+
+# Task 2 - Purchasing tickets
+print("\nTicket Purchase")
+print("----------------")
+
+while True:
+    num_passengers = int(input("Enter the number of passengers (1-80): "))
+    
+    if num_passengers < 1 or num_passengers > 80:
+        print("Invalid number of passengers. Please enter a number between 1 and 80.")
+        continue
+    
+    journey_index = int(input("Enter the journey index (1-4):\n1. 09:00 - 10:00\n2. 11:00 - 12:00\n3. 13:00 - 14:00\n4. 15:00 - 16:00\n"))
+    
+    if journey_index < 1 or journey_index > 4:
+        print("Invalid journey index. Please select a journey between 1 and 4.")
+        continue
+    
+    direction = input("Enter 'U' for up journey, 'D' for down journey: ").upper()
+    
+    if direction != 'U' and direction != 'D':
+        print("Invalid direction. Please enter 'U' for up journey or 'D' for down journey.")
+        continue
+    
+    current_journey = train_journeys[journey_index - 1]
+
+    if direction == 'U':
+        if current_journey.passengers_up + num_passengers > MAX_PASSENGERS_PER_COACH * 6:
+            print("Tickets are not available for the up journey.")
+            continue
+        current_journey.passengers_up += num_passengers
+        current_journey.money_up += num_passengers * TICKET_PRICE
+    else:
+        if current_journey.passengers_down + num_passengers > MAX_PASSENGERS_PER_COACH * 6:
+            print("Tickets are not available for the down journey.")
+            continue
+        current_journey.passengers_down += num_passengers
+        current_journey.money_down += num_passengers * TICKET_PRICE
+
+    # Update total counts
+    total_passengers += num_passengers
+    total_money += num_passengers * TICKET_PRICE
+
+    # Check for group discount
+    if num_passengers >= GROUP_DISCOUNT_SIZE:
+        free_tickets = (num_passengers // GROUP_DISCOUNT_SIZE) * GROUP_DISCOUNT_SIZE
+        total_money += free_tickets * TICKET_PRICE
+
+    # Display the updated train schedule
+    print("\nUpdated Train Schedule (Up and Down)")
+    print("----------------------------------")
+    
+    for i in range(4):
+        print(f"Journey {i+1} (09:00 - 10:00): ", end="")
+        displayTickets(MAX_PASSENGERS_PER_COACH * 6 - train_journeys[i].passengers_up)
+        print(" | ", end="")
+        displayTickets(MAX_PASSENGERS_PER_COACH * 6 - train_journeys[i].passengers_down)
+        print()
+
+    print(f"\nTotal Passengers: {total_passengers}")
+    print(f"Total Money: ${total_money}")
+
+    cont = input("Do you want to make another purchase? (Y/N): ").upper()
+
+    if cont != 'Y':
+        break
+
+# Task 3 - End of the day
+print("\nEnd of the Day Summary")
+print("-----------------------")
+
+for i in range(4):
+    journey_num = i + 1
+    journey = train_journeys[i]
+    print(f"Journey {journey_num} (Up): {journey.passengers_up} passengers, ${journey.money_up}")
+    print(f"Journey {journey_num} (Down): {journey.passengers_down} passengers, ${journey.money_down}")
